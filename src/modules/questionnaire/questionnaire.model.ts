@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Question, QuestionSchema } from './question.model';
 
@@ -31,7 +31,7 @@ export class Questionnaire extends Document {
   @ApiProperty({
     example: true,
     description:
-      'Whether the questionnaire is currently active based on start and end times',
+      'Whether the questionnaire is currently active based on status',
   })
   isActive: boolean;
 
@@ -48,10 +48,6 @@ export class Questionnaire extends Document {
   })
   @Prop({ default: '' })
   description: string;
-
-  @ApiProperty({ type: [Question] })
-  @Prop({ type: [QuestionSchema], default: [] })
-  elements: Question[];
 
   @ApiProperty({
     example: 'https://cdn.example.com/questionnaires/cover.jpg',
@@ -76,10 +72,24 @@ export class Questionnaire extends Document {
 
   @ApiPropertyOptional({
     example: [{ title: 'How satisfied are you?' }],
-    description: 'Optional legacy questions array',
+    description: 'Optional questions array',
   })
-  @Prop({ type: [Object], default: [] })
-  questions?: Record<string, any>[];
+  @Prop({ type: [QuestionSchema], default: [] })
+  questions?: Question[];
+
+  @ApiPropertyOptional({
+    example: false,
+    description: 'Whether the questionnaire is unavailable',
+  })
+  @Prop({ type: Boolean, default: false })
+  isUnavailable?: boolean;
+
+  @ApiPropertyOptional({
+    example: 'This questionnaire is temporarily unavailable',
+    description: 'Unavailability message',
+  })
+  @Prop({ type: String, default: '' })
+  unavailableMessage?: string;
 
   @ApiProperty({
     example: { type: 'coins', amount: 10 },
@@ -94,6 +104,20 @@ export class Questionnaire extends Document {
   })
   @Prop({ type: Object, default: {} })
   timing: Record<string, any>;
+
+  @ApiPropertyOptional({
+    example: { canSkip: true },
+    description: 'Optional navigation settings',
+  })
+  @Prop({ type: Object, default: null })
+  navigation?: Record<string, any> | null;
+
+  @ApiPropertyOptional({
+    example: [{ name: 'score', expression: 'q1 + q2' }],
+    description: 'Optional computed variables',
+  })
+  @Prop({ type: [Object], default: [] })
+  computedVariables?: Record<string, any>[];
 
   @ApiPropertyOptional({
     example: { title: 'Welcome' },
@@ -129,38 +153,10 @@ export class Questionnaire extends Document {
   })
   @Prop({ type: Object, default: null })
   earlyTermination?: Record<string, any> | null;
-
-  @ApiProperty({
-    example: '2025-10-18T09:00:00.000Z',
-    description: 'Start time when the questionnaire becomes active',
-  })
-  @Prop({ type: Date })
-  startTime: Date;
-
-  @ApiProperty({
-    example: '2025-12-31T23:59:59.999Z',
-    description: 'End time when the questionnaire becomes inactive',
-  })
-  @Prop({ type: Date })
-  endTime: Date;
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  ownerId: Types.ObjectId;
-
-  @ApiProperty({
-    example: true,
-    description: 'Manual switch to enable or disable the questionnaire',
-  })
-  @Prop({ type: Boolean, default: true })
-  enabled: boolean;
 }
 
 export const QuestionnaireSchema = SchemaFactory.createForClass(Questionnaire);
 
 QuestionnaireSchema.virtual('isActive').get(function () {
-  const now = new Date();
-  if (this.status) {
-    return this.status === QuestionnaireStatus.ACTIVE;
-  }
-  return this.enabled && now >= this.startTime && now <= this.endTime;
+  return this.status === QuestionnaireStatus.ACTIVE;
 });

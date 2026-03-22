@@ -1,16 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsObject,
   IsString,
-  IsDateString,
   IsBoolean,
   IsOptional,
   IsArray,
-  ValidateNested,
-  IsEnum,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { QuestionDto } from './question.dto';
 import { QuestionnaireStatus } from '../questionnaire.model';
 
 export class CreateQuestionnaireDto {
@@ -28,38 +23,130 @@ export class CreateQuestionnaireDto {
   @IsString()
   description: string;
 
-  @ApiProperty({ type: [QuestionDto] })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => QuestionDto)
-  elements: QuestionDto[];
+  @ApiProperty({
+    example: 'https://cdn.example.com/questionnaires/cover.jpg',
+    description: 'Questionnaire cover image URL',
+  })
+  @IsString()
+  imageUrl: string;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Whether the questionnaire is currently active',
+  })
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 
   @ApiProperty({ enum: QuestionnaireStatus, required: false })
-  @IsEnum(QuestionnaireStatus)
+  @IsString()
   @IsOptional()
   status?: QuestionnaireStatus;
 
-  @ApiProperty({
-    example: '2025-10-18T09:00:00.000Z',
-    description: 'Start time when the questionnaire becomes active',
+  @ApiPropertyOptional({
+    example: false,
+    description: 'Whether the questionnaire is unavailable',
   })
-  @IsDateString()
-  startTime: string;
+  @IsBoolean()
+  @IsOptional()
+  isUnavailable?: boolean;
+
+  @ApiPropertyOptional({
+    example: 'This questionnaire is temporarily unavailable',
+    description: 'Unavailability message',
+  })
+  @IsString()
+  @IsOptional()
+  unavailableMessage?: string;
 
   @ApiProperty({
-    example: '2025-12-31T23:59:59.999Z',
-    description: 'End time when the questionnaire becomes inactive',
-  })
-  @IsDateString()
-  endTime: string;
-
-  @ApiProperty({
-    example: true,
-    description: 'Manual switch to enable or disable the questionnaire',
-    required: false,
-    default: true,
+    example: 12,
+    description: 'Number of questions in the questionnaire',
   })
   @IsOptional()
-  @IsBoolean()
-  enabled: boolean = true;
+  questionCount?: number;
+
+  @ApiPropertyOptional({
+    description: 'Questionnaire groups',
+  })
+  @IsArray()
+  @IsOptional()
+  groups?: Record<string, any>[];
+
+  @ApiPropertyOptional({
+    description: 'Questions array',
+  })
+  @IsArray()
+  @IsOptional()
+  questions?: Record<string, any>[];
+
+  @ApiProperty({
+    example: { type: 'coins', amount: 10 },
+    description: 'Reward configuration',
+  })
+  @IsObject()
+  @IsOptional()
+  reward?: Record<string, any>;
+
+  @ApiProperty({
+    example: { durationInMinutes: 20 },
+    description: 'Timing configuration',
+  })
+  @IsObject()
+  @IsOptional()
+  timing?: Record<string, any>;
+
+  @ApiPropertyOptional({
+    description: 'Navigation settings',
+  })
+  @IsObject()
+  @IsOptional()
+  navigation?: Record<string, any>;
+
+  @ApiPropertyOptional({
+    description: 'Computed variables',
+  })
+  @IsArray()
+  @IsOptional()
+  computedVariables?: Record<string, any>[];
+
+  @ApiPropertyOptional({
+    example: { title: 'Welcome' },
+    description: 'Start page configuration',
+  })
+  @IsObject()
+  @IsOptional()
+  startPage?: Record<string, any> | null;
+
+  @ApiPropertyOptional({
+    example: { title: 'Finished' },
+    description: 'End page configuration',
+  })
+  @IsObject()
+  @IsOptional()
+  endPage?: Record<string, any> | null;
+
+  @ApiPropertyOptional({
+    example: [{ title: 'Thanks for your feedback' }],
+    description: 'Thank you pages list',
+  })
+  @IsArray()
+  @IsOptional()
+  thankYouPages?: Record<string, any>[];
+
+  @ApiProperty({
+    example: [{ type: 'info', text: 'This questionnaire may be updated.' }],
+    description: 'List of notices',
+  })
+  @IsArray()
+  @IsOptional()
+  notices?: Record<string, any>[];
+
+  @ApiPropertyOptional({
+    example: { enabled: true, message: 'Survey closed early' },
+    description: 'Early termination configuration',
+  })
+  @IsObject()
+  @IsOptional()
+  earlyTermination?: Record<string, any> | null;
 }
