@@ -1,20 +1,18 @@
 import {
   Injectable,
   UnauthorizedException,
-  BadRequestException,
   ConflictException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../users/users.service';
-import { CreateUserDto } from '../users/dto';
 import { SmsService } from '../common/sms/sms.service';
 import { UserDocument } from '../users/users.model';
 import { LogInDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import type { JwtPayload } from './interfaces/jwt-payload.interface';
-import { randomNumber } from '../common/utils/random-number';
-import * as bcrypt from 'bcryptjs';
 import { I18nContext, I18nService } from 'nestjs-i18n';
+import { SignUpDto } from './dto/sign-up.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -26,69 +24,37 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async signUp(
-    createUserDto: CreateUserDto,
-  ): Promise<string | null | undefined> {
+  async signUp(signUpDto: SignUpDto): Promise<string> {
     const locale = I18nContext.current()?.lang || 'en';
     const isProduction =
       this.configService.get<string>('NODE_ENV') === 'production';
 
-    if (createUserDto.phone) {
-      const existUser = await this.userService.findOne({
-        phone: createUserDto.phone,
-      });
+    const existUser = await this.userService.findOne({
+      phone: signUpDto.phone,
+    });
 
-      if (existUser) {
-        existUser.phoneValidation = randomNumber(1000, 9999).toString();
-        existUser.locale = locale;
-        await existUser.save();
-
-        if (isProduction) {
-          try {
-            await this.smsService.sendVerify(
-              existUser.phone,
-              existUser.phoneValidation,
-              locale,
-            );
-          } catch (err) {
-            console.error('SMS sending failed, but continuing:', err);
-          }
-        }
-      } else {
-        const user = await this.userService.create({
-          ...createUserDto,
-          locale,
-        });
-        if (isProduction) {
-          try {
-            await this.smsService.sendVerify(
-              user.phone,
-              user.phoneValidation,
-              locale,
-            );
-          } catch (err) {
-            console.error('SMS sending failed, but continuing:', err);
-          }
-        }
-        return this.i18n.t('auth.otp_sent', { lang: locale });
-      }
-    } else if (createUserDto.email && createUserDto.password) {
-      const exists = await this.userService.findOne({
-        email: createUserDto.email,
-      });
-      if (exists) {
-        throw new ConflictException('Email already in use');
-      }
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-      await this.userService.create({
-        ...createUserDto,
-        password: hashedPassword,
-        locale,
-      });
-      return this.i18n.t('auth.user_created', { lang: locale });
-    } else {
-      throw new BadRequestException('Provide phone or email/password');
+    if (existUser) {
+      throw new ConflictException('Phone already in use');
     }
+
+    const user = await this.userService.create({
+      ...signUpDto,
+      locale,
+    });
+
+    if (isProduction) {
+      try {
+        await this.smsService.sendVerify(
+          user.phone,
+          user.phoneValidation,
+          locale,
+        );
+      } catch (err) {
+        console.error('SMS sending failed, but continuing:', err);
+      }
+    }
+
+    return this.i18n.t('auth.otp_sent', { lang: locale });
   }
 
   async signIn(logInDto: LogInDto): Promise<{ accessToken: string } | string> {

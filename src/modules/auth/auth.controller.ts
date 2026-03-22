@@ -7,8 +7,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../users/dto';
 import { LogInDto } from './dto/login.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 import { GetJwt } from './decorators/jwt.decorator';
 import type { JwtPayload } from './interfaces/jwt-payload.interface';
 import { Public } from './decorators/public.decorator';
@@ -27,10 +27,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('sign-up')
   @Throttle({ default: { limit: 1, ttl: seconds(60) } })
-  async signUp(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<string | null | undefined> {
-    return this.authService.signUp(createUserDto);
+  async signUp(@Body() signUpDto: SignUpDto): Promise<string> {
+    return this.authService.signUp(signUpDto);
   }
 
   @Public()
