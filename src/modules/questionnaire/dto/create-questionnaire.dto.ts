@@ -111,6 +111,29 @@ export class CreateQuestionnaireDto {
   computedVariables?: Record<string, any>[];
 
   @ApiPropertyOptional({
+    example: {
+      presetKey: 'default-clean',
+      questionColor: '#1F2937',
+      answerColor: '#374151',
+    },
+    description: 'Questionnaire theme settings',
+  })
+  @IsObject()
+  @IsOptional()
+  theme?: Record<string, any> | null;
+
+  @ApiPropertyOptional({
+    example: {
+      totalResponsesEnabled: false,
+      optionSelectionLimitsEnabled: false,
+    },
+    description: 'Response limits configuration',
+  })
+  @IsObject()
+  @IsOptional()
+  responseLimits?: Record<string, any> | null;
+
+  @ApiPropertyOptional({
     example: { title: 'Welcome' },
     description: 'Start page configuration',
   })

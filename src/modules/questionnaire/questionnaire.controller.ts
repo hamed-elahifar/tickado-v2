@@ -1,4 +1,4 @@
-import { Controller, Type } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../common/generic/base.controller';
 import { QuestionnaireService } from './questionnaire.service';
@@ -9,8 +9,8 @@ import { CreateQuestionnaireDto, UpdateQuestionnaireDto } from './dto';
 @Controller('questionnaires')
 export class QuestionnaireController extends BaseController<
   QuestionnaireDocument,
-  Type<CreateQuestionnaireDto>,
-  Type<UpdateQuestionnaireDto>
+  CreateQuestionnaireDto,
+  UpdateQuestionnaireDto
 >(
   Questionnaire,
   CreateQuestionnaireDto,

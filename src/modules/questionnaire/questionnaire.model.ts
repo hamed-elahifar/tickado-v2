@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Question, QuestionSchema } from './question.model';
 
 export type QuestionnaireDocument = Questionnaire & Document;
 
@@ -71,11 +70,11 @@ export class Questionnaire extends Document {
   groups?: Record<string, any>[];
 
   @ApiPropertyOptional({
-    example: [{ title: 'How satisfied are you?' }],
+    example: [{ title: 'sample title' }],
     description: 'Optional questions array',
   })
-  @Prop({ type: [QuestionSchema], default: [] })
-  questions?: Question[];
+  @Prop({ type: [Object], default: [] })
+  questions?: Record<string, any>[];
 
   @ApiPropertyOptional({
     example: false,
@@ -118,6 +117,27 @@ export class Questionnaire extends Document {
   })
   @Prop({ type: [Object], default: [] })
   computedVariables?: Record<string, any>[];
+
+  @ApiPropertyOptional({
+    example: {
+      presetKey: 'default-clean',
+      questionColor: '#1F2937',
+      answerColor: '#374151',
+    },
+    description: 'Optional questionnaire theme settings',
+  })
+  @Prop({ type: Object, default: null })
+  theme?: Record<string, any> | null;
+
+  @ApiPropertyOptional({
+    example: {
+      totalResponsesEnabled: false,
+      optionSelectionLimitsEnabled: false,
+    },
+    description: 'Optional response limits configuration',
+  })
+  @Prop({ type: Object, default: null })
+  responseLimits?: Record<string, any> | null;
 
   @ApiPropertyOptional({
     example: { title: 'Welcome' },

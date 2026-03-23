@@ -9,19 +9,21 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { Document } from 'mongoose';
 import { BaseService } from './base.service';
 import { PaginationQueryDto } from '../dto';
 
-export function BaseController<
-  T extends Document,
-  CreateDto extends Type<unknown>,
-  UpdateDto extends Type<unknown>,
->(
+export function BaseController<T extends Document, CreateDto, UpdateDto>(
   EntityClass: Type<T>,
-  CreateDtoClass: CreateDto,
-  UpdateDtoClass: UpdateDto,
+  CreateDtoClass: Type<CreateDto>,
+  UpdateDtoClass: Type<UpdateDto>,
   entityName: string,
 ): Type<any> {
   class BaseControllerHost {
@@ -39,6 +41,7 @@ export function BaseController<
     })
     @ApiResponse({ status: 400, description: 'Bad Request.' })
     @ApiResponse({ status: 409, description: 'Conflict - Already exists.' })
+    @ApiBody({ type: CreateDtoClass })
     async create(@Body() createDto: CreateDto): Promise<T> {
       return this.baseService.create(createDto);
     }
@@ -84,6 +87,7 @@ export function BaseController<
       type: EntityClass,
     })
     @ApiResponse({ status: 404, description: `${entityName} not found.` })
+    @ApiBody({ type: UpdateDtoClass })
     async update(
       @Param('id') id: string,
       @Body() updateDto: UpdateDto,

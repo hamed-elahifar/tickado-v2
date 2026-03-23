@@ -4,7 +4,6 @@ import {
   NotFoundException,
   Param,
   Query,
-  Type,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -26,8 +25,8 @@ import { UserService } from './users.service';
 @Controller('admin/users')
 export class AdminUsersController extends BaseController<
   UserDocument,
-  Type<CreateUserDto>,
-  Type<UpdateUserDto>
+  CreateUserDto,
+  UpdateUserDto
 >(User, CreateUserDto, UpdateUserDto, 'User') {
   constructor(private readonly userService: UserService) {
     super(userService);

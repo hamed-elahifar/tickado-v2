@@ -1,4 +1,4 @@
-import { Controller, Type } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../common/generic/base.controller';
 import { AnswerService } from './answer.service';
@@ -9,8 +9,8 @@ import { CreateAnswerDto, UpdateAnswerDto } from './dto';
 @Controller('answers')
 export class AnswerController extends BaseController<
   AnswerDocument,
-  Type<CreateAnswerDto>,
-  Type<UpdateAnswerDto>
+  CreateAnswerDto,
+  UpdateAnswerDto
 >(Answer, CreateAnswerDto, UpdateAnswerDto, 'Answer') {
   constructor(private readonly answerService: AnswerService) {
     super(answerService);
