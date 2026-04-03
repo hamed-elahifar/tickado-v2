@@ -21,6 +21,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "NODE_ENV=test jest --config ./test/jest-e2e.json --runInBand",
     "test:e2e:notif": "NODE_ENV=test jest --config ./test/jest-e2e.json test/notif/notif.e2e-spec.ts --runInBand",
+    "test:e2e:ticketing": "NODE_ENV=test jest --config ./test/jest-e2e.json test/ticketing/ticket.e2e-spec.ts --runInBand",
     "test:e2e:users": "NODE_ENV=test jest --config ./test/jest-e2e.json test/users/users.e2e-spec.ts --runInBand",
     "test:e2e:users-profile": "NODE_ENV=test jest --config ./test/jest-e2e.json test/users/profile.e2e-spec.ts --runInBand"
   },
