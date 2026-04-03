@@ -83,6 +83,10 @@ export abstract class BaseRepository<T extends Document> {
     return result.deletedCount >= 1;
   }
 
+  async count(entityFilterQuery: FilterQuery<T> = {}): Promise<number> {
+    return this.entityModel.countDocuments(entityFilterQuery);
+  }
+
   async upsert(
     entityFilterQuery: FilterQuery<T>,
     updateEntityData: UpdateQuery<T>,

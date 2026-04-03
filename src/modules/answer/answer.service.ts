@@ -13,4 +13,18 @@ export class AnswerService extends BaseService<
   constructor(repository: AnswerRepository) {
     super(repository, 'Answer');
   }
+
+  async createForUser(
+    createAnswerDto: CreateAnswerDto,
+    userId: string,
+  ): Promise<AnswerDocument> {
+    return this.create({
+      ...createAnswerDto,
+      userId,
+    } as CreateAnswerDto & { userId: string });
+  }
+
+  async getCountByQuestionnaireId(questionnaireId: string): Promise<number> {
+    return await this.repository.count({ questionnaireId });
+  }
 }

@@ -6,10 +6,6 @@ export class CreateAnswerDto {
   @IsMongoId()
   questionnaireId: string;
 
-  @ApiProperty({ description: 'Related user id' })
-  @IsMongoId()
-  userId: string;
-
   @ApiProperty({
     description: 'Object containing the answers to the questionnaire',
     example: { q1: 'Yes', q2: 'No' },
