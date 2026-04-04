@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { createShortID } from '../common/utils/nanoid';
 
 export type QuestionnaireDocument = Questionnaire & Document;
 
@@ -16,6 +17,13 @@ export enum QuestionnaireStatus {
   toObject: { virtuals: true },
 })
 export class Questionnaire extends Document {
+  @ApiProperty({
+    example: 'A1B2C3D4',
+    description: 'Short questionnaire identifier',
+  })
+  @Prop({ type: String, default: createShortID(8) })
+  shortId: string;
+
   @ApiProperty({
     enum: QuestionnaireStatus,
     default: QuestionnaireStatus.DRAFT,
@@ -40,6 +48,20 @@ export class Questionnaire extends Document {
   })
   @Prop({ required: true })
   title: string;
+
+  @ApiPropertyOptional({
+    example: { locale: 'fa', allowAnonymous: false },
+    description: 'Optional general settings object from the frontend',
+  })
+  @Prop({ type: Object, default: null })
+  generalSettings?: Record<string, any> | null;
+
+  @ApiPropertyOptional({
+    example: { label: 'in-review', color: '#F59E0B' },
+    description: 'Optional detailed status metadata from the frontend',
+  })
+  @Prop({ type: Object, default: null })
+  statusDetail?: Record<string, any> | null;
 
   @ApiProperty({
     example: 'Survey about product satisfaction',

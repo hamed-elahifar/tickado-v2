@@ -16,6 +16,22 @@ export class CreateQuestionnaireDto {
   @IsString()
   title: string;
 
+  @ApiPropertyOptional({
+    example: { locale: 'fa', allowAnonymous: false },
+    description: 'General settings object from the frontend',
+  })
+  @IsObject()
+  @IsOptional()
+  generalSettings?: Record<string, any> | null;
+
+  @ApiPropertyOptional({
+    example: { label: 'in-review', color: '#F59E0B' },
+    description: 'Detailed status metadata from the frontend',
+  })
+  @IsObject()
+  @IsOptional()
+  statusDetail?: Record<string, any> | null;
+
   @ApiProperty({
     example: 'Survey about product satisfaction',
     description: 'Questionnaire description',

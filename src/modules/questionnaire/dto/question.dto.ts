@@ -59,11 +59,11 @@ export class QuestionDto {
   rows?: QuestionOptionDto[]; // Matrix Rows
 
   @IsOptional()
-  logic?: any;
+  logic?: Record<string, any>;
 
   @IsOptional()
-  validation?: any;
+  validation?: Record<string, any>;
 
   @IsOptional()
-  settings?: any;
+  settings?: Record<string, any>;
 }

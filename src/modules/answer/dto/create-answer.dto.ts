@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsObject } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsMongoId, IsObject, IsOptional } from 'class-validator';
 
 export class CreateAnswerDto {
   @ApiProperty({ description: 'Related questionnaire id' })
@@ -12,4 +12,12 @@ export class CreateAnswerDto {
   })
   @IsObject()
   answers: Record<string, any>;
+
+  @ApiPropertyOptional({
+    description: 'Additional metadata related to this answer',
+    example: { source: 'mobile-app', locale: 'fa' },
+  })
+  @IsOptional()
+  @IsObject()
+  metadata?: Record<string, any>;
 }

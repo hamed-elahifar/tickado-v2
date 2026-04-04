@@ -4,9 +4,11 @@ import { Answer, AnswerSchema } from './answer.model';
 import { AnswerController } from './answer.controller';
 import { AnswerService } from './answer.service';
 import { AnswerRepository } from './answer.repository';
+import { QuestionnaireModule } from '../questionnaire/questionnaire.module';
 
 @Module({
   imports: [
+    QuestionnaireModule,
     MongooseModule.forFeature([
       {
         name: Answer.name,

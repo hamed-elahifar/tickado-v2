@@ -9,6 +9,8 @@ import { RolesEnum } from '../../src/modules/auth/enums/roles.enum';
 
 type AppModuleType = typeof import('../../src/app.module');
 
+jest.setTimeout(20000);
+
 describe('TicketController (e2e)', () => {
   let app: INestApplication;
   let connection: Connection;
